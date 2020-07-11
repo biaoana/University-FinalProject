@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewData["Title"] = "CreateClassroom";
+}
+<style>
+    input {
+        border: none;
+        border-bottom: 2px solid black;
+    }
+
+    #create {
+        width: 100px;
+        height: 40px;
+        box-shadow: 0 5px 25px rgba(0,0,0,.5);
+        margin: 20px 0 0 40px;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.349);
+    }
+
+        #create:hover {
+            background-color: cyan;
+        }
+</style>
+
+<label>Classroom Name: </label>
+<input id="name" />
+<div style="display:none;" class="alert alert-danger" role="alert" id="nameError">
+    <p>Please insert a Classroom name!</p>
+</div>
+<br />
+<label>Classroom Code:</label>
+<input id="code" />
+<button id="codeGenerator" type="button" class="btn btn-outline-primary">Generate Code</button>
+<div style="display:none;" class="alert alert-danger" role="alert" id="codeError">
+    <p>Please insert a Classroom code!</p>
+</div>
+<br />
+<br />
+<button id="create">Create</button>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#codeGenerator").click(function () {
+                var result = '';
+                var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                var charactersLength = characters.length;
+                for (var i = 0; i < 6; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                $("#code").val(result);
+            });
+            $("#create").click(function () {
+                var object = new Object();
+                object.Name = $("#name").val();
+                object.ClassCode = $("#code").val();
+                if (object.Name == '') {
+                    $("#nameError").css("display", "block")
+                }
+                else {
+                    if (object.ClassCode == '') {
+                        $("#codeError").css("display", "block")
+                        $("#nameError").css("display", "none")
+
+                    }
+                    else {
+                        $("#codeError").css("display", "none")
+                        $("#nameError").css("display", "none")
+                        $.ajax({
+                            type: "POST",
+                            url: "/Classroom/CreateClassroom",
+                            data: object,
+                            success: function () {
+                                window.location.href = `@Url.Action("Index", "Home")`;
+                            },
+                            error: function () {
+                                console.log("An error occured");
+                            }
+                        })
+                    }
+                }
+            });
+        });
+    </script>
+}
+

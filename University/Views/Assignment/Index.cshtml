@@ -1,0 +1,124 @@
+﻿@model University.ViewModel.AssignmentViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .announcment {
+        border: 2px black solid;
+        border-radius: 10px;
+        margin: 10px 0px;
+        background-color: aqua;
+    }
+    .announcment:hover{
+        background-color:aquamarine;
+    }
+
+    #teacherAssignment {
+        box-shadow: 2px 2px 2px #000;
+    }
+    #btn {
+        width: 100px;
+        height: 40px;
+        box-shadow: 0 5px 25px rgba(0,0,0,.5);
+        margin: 20px 0 0 40px;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.349);
+    }
+
+        #btn:hover {
+            background-color: cyan;
+        }
+        p{
+            cursor: default;
+        }
+    
+     
+</style>
+@{
+    var user = await userManager.GetUserAsync(User);
+    if (await userManager.IsInRoleAsync(user, "Teacher"))
+    {
+        <div id="teacherAssignment">
+            <form asp-action="Index" method="post">
+                <div id="assignment">
+                    @Html.RadioButtonFor(model => model.Type, "course", new { @class = "custom-control custom-radio" })Add  a course 
+                    @Html.RadioButtonFor(model => model.Type, "announcment", new { @class = "custom-control custom-radio" })Add  an Announcment
+                    @Html.RadioButtonFor(model => model.Type, "assignment", new { @class = "custom-control custom-radio" })Add  an Assignment <hr />
+                    <input asp-for="@Model.Classroom.ClassroomID" hidden />
+                    <div class="form-group" id="announcmentForm" style="display:none">
+                        <textarea asp-for="@Model.Description" placeholder="Put your description  here"></textarea>
+
+                    </div>
+                    <div class="form-group" id="courseForm" style="display:none">
+                        <input asp-for="@Model.Link" placeholder="Put the assignment link  here" />
+                    </div>
+                    <div class="form-group" id="assignmentForm" style="display:none">
+                        <input type="date" asp-for="@Model.DueTo" />
+                    </div>
+                    <button type="submit" id="btn" style="display:none">Add</button>
+                </div>
+
+            </form>
+        </div>
+    }
+    @foreach (var item in Model.Assignments)
+    {
+        if (item.Type == "course")
+        {
+            <div class="announcment" onclick="location.href=`@Url.Action("Assignment", "Assignment", new { id = item.AssignmentID })`">
+                <p>@item.Description</p>
+                <p>@item.Link</p>
+            
+            </div>
+        }
+        else
+                    if (item.Type == "assignment")
+        {
+            <div class="announcment" onclick="location.href=`@Url.Action("Assignment", "Assignment", new { id = item.AssignmentID })`">
+                <p>@item.Description</p>
+
+            </div>
+        }
+        else
+        {
+            <div class="announcment">
+                <p>@item.Description</p>
+                <p>@item.Type</p>
+
+            </div>
+        }
+    }
+}
+
+@section scripts{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $("input[name='Type']").click(function () {
+            $("#btn").css("display", "block");
+            var type = $("input[name = 'Type']:checked").val();
+            console.log(type);
+            if (type == "course") {
+                $("#announcmentForm").css("display", "block");
+                $("#courseForm").css("display", "block");
+                $("#assignmentForm").css("display", "none");
+            }
+            else
+                if (type == "announcment") {
+                    $("#announcmentForm").css("display", "block");
+                    $("#courseForm").css("display", "none");
+                    $("#assignmentForm").css("display", "none");
+                }
+                else
+                    if (type == "assignment") {
+                        $("#announcmentForm").css("display", "block");
+                        $("#courseForm").css("display", "block");
+                        $("#assignmentForm").css("display", "block");
+                    }
+        })
+    </script>
+}

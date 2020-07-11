@@ -1,0 +1,13 @@
+﻿@model University.ViewModel.RequireViewModel
+@{
+    ViewData["Title"] = "Require";
+}
+
+<form class="form-control" asp-action="Require" method="post">
+    <div class="form-group">
+        <label>Classroom Code</label>
+        <input asp-for="@Model.ClassroomId.ClassCode" />
+        <button class="btn" type="submit">Request</button>
+    </div>
+</form>
+
